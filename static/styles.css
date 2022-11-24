@@ -1,0 +1,128 @@
+body {
+  text-align: center;
+  background-color: #fff;
+}
+
+.homeButtons {
+    margin: auto;
+    justify-content: center;
+    margin: 10px;
+}
+.nextButtons {
+    margin: auto;
+    justify-content: center;
+    margin: 10px;
+}
+.players {
+    margin: auto;
+    justify-content: center;
+    margin: 20px;
+}
+.player {
+    margin: auto;
+    justify-content: center;
+    margin: 40px;
+}
+.points {
+    margin: 0px;
+
+    font-size: 2rem;
+    vertical-align: middle!important;
+}
+.playerRows {
+    margin: auto!important;
+    justify-content: center;
+    text-align: center;
+    vertical-align: middle;
+}
+.playerName {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+.roomCodeRow {
+    margin: auto;
+    justify-content: center;
+    margin-top: 50px;
+    margin-bottom: 20px;
+
+}
+.minus{
+    font-weight: bold;
+    font-size: 1rem!important;
+    border-color: #fff!important;
+    margin: 0px!important;
+    margin-top: 10px!important;
+    color: #333;
+
+}
+
+.plus{
+    font-weight: bold;
+        font-size: 1rem!important;
+    border-color: #fff!important;
+    margin:0px!important;
+    margin-top: 10px!important;
+    color: #333;
+}
+.plus:hover{
+    font-weight: bold;
+        font-size: 1rem!important;
+    border-color: #fff!important;
+    margin:0px!important;
+    color: #007BFF;
+    margin-top: 10px!important;
+    background-color: #fff!important;
+}
+.minus:hover{
+    font-weight: bold;
+        font-size: 1rem!important;
+    border-color: #fff!important;
+    margin:0px!important;
+    margin-top: 10px!important;
+    color: #007BFF;
+    background-color: #fff!important;
+}
+.roomCode {
+    font-size: 4rem;
+    color: #007BFF;
+    font-weight: bold;
+}
+.playerAnswer {
+    min-height: 56px;
+}
+.prompt {
+    min-height: 96px;
+    justify-content: center;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    font-size: 4rem;
+    color: #007BFF;
+    font-weight: bold;
+}
+
+.slate {
+    margin:auto;
+    justify-content:center;
+    margin-top: 50px;
+}
+.title{
+    font-size: 3rem;
+}
+
+.name {
+    margin-top: 30px!important;
+    margin: auto;
+    max-width: 250px;
+    justify-content: center;
+}
+.room {
+    margin: auto;
+    max-width: 250px;
+    justify-content: center;
+}
+.answer {
+    margin-top: 30px!important;
+    margin: auto;
+    max-width: 250px;
+    justify-content: center;
+}

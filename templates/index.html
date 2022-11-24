@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif&family=Prata&family=Quicksand:wght@500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>____ Slate</title>
+  </head>
+  <body>
+    <div class="container-fluid" style="max-width:1050px">
+    <header class="site-header">
+
+        <div class="row slate">
+            <h1 class="title">_____ SLATE</h1>
+        </div>
+        <!-- homepage -->
+        {% if not user and not code and not roomCode and not join%}
+        <div class="row homeButtons">
+            <a type="button" style="margin-top:10px;margin-right:10px;"class="btn-dark btn-lg btn" href="{{url_for('generateRoomCode') }}" aria-label="Generate Room Code">
+                <span aria-hidden="true">Generate Room Code</span>
+            </a>
+            <a type="button" style="margin-top:10px;"class="btn-dark btn-lg btn" href="{{url_for('joinGame') }}" aria-label="Play">
+              <span aria-hidden="true">Play</span>
+            </a>
+        </div>
+        {%endif%}
+
+
+        <!-- create room code page -->
+        {% if code %}
+        <div class="row roomCodeRow">
+            <h1 class="roomCode">
+                {{code}}
+            </h1>
+        </div>
+        <a type="button" style="margin-top:10px;"class="btn-dark btn-lg btn" href="{{url_for('createRoom', code=code) }}" aria-label="Enter Room">
+            <span aria-hidden="true">Enter Room</span>
+        </a>
+        {%endif%}
+
+        <!-- game page  -->
+        {% if room %}
+        {% if prompt or players %}
+        <div class="row prompt">
+            {% if prompt %}
+
+                {{ prompt }}
+
+            {% endif %}
+
+        </div>
+
+            <div class="row players">
+            {% for player in players %}
+                <div class="col-lg-3 player">
+                    <div class="row playerAnswer playerRows">
+                    {% if flip %}
+                        <h1>
+                            {{player.answer}}
+                        </h1>
+                    {% endif %}
+                </div>
+                    <div class="row playerRows">
+                        <a type="button" style="margin:10px;"class="btn-outline-dark btn-sm btn minus" href="{{url_for('adjustPoints', code=roomCode, id=player.id, add=false) }}" aria-label="-">
+                            <span aria-hidden="true">-</span>
+                        </a>
+                        <h4 class="points">
+                        {{player.points}}
+                    </h4>
+                        <a type="button" style="margin:10px;"class="btn-outline-dark btn-sm btn plus" href="{{url_for('adjustPoints', code=roomCode, id=player.id, add=true) }}" aria-label="+">
+                            <span aria-hidden="true">+</span>
+                        </a>
+                    </div>
+
+                    <div class="row playerRows playerName">
+                        {{player.name}}
+                    </div>
+                    {% if player.name==winner or player.name in winners %}
+                    <div class="row playerRows">
+                        <h1>WINNER!</h1>
+                    </div>
+                    {% endif %}
+
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+            {% if not winner and not winners %}
+            <div class="row nextButtons">
+                <a type="button" style="margin-top:10px;margin-right:10px;"class="btn-dark btn-lg btn" href="{{url_for('newCard', code=roomCode) }}" aria-label="New Card">
+                    <span aria-hidden="true">New Card</span>
+                </a>
+                <a type="button" style="margin-top:10px;"class="btn-dark btn-lg btn" href="{{url_for('flipAnswers', code=roomCode) }}" aria-label="Flip">
+                    <span aria-hidden="true">Flip</span>
+                </a>
+            </div>
+            {% endif %}
+            {% if winner or winners %}
+            <div class="row nextButtons">
+                <a type="button" style="margin-top:10px;margin-right:10px;"class="btn-dark btn-lg btn" href="{{url_for('newGame', code=roomCode) }}" aria-label="New Game">
+                    <span aria-hidden="true">New Game</span>
+                </a>
+                <a type="button" style="margin-top:10px;"class="btn-dark btn-lg btn" href="{{url_for('done', code=roomCode) }}" aria-label="Done">
+                    <span aria-hidden="true">Done</span>
+                </a>
+            </div>
+            {% endif %}
+        {% endif %}
+
+        <!-- join game page -->
+        {% if join == True and form %}
+            <form class="col justify-content-center" method="POST" action="{{ url_for('addPlayer') }}">
+                {{ form.csrf_token }}
+                {{ form.username(class="name form-control form-control-lg",size=10,placeholder="Name",style="margin-bottom:0px;") }}<br>
+                {{ form.roomCode(class="room form-control form-control-lg",size=10,placeholder="Room Code",style="margin-bottom:0px;") }}
+                <br>
+                {{ form.play(class="btn btn-lg btn-dark") }}
+            </form>
+        {% endif %}
+
+        <!-- play game page -->
+        {% if user and answerForm %}
+            <form class="justify-content-center" method="POST" action="{{ url_for('submitAnswer') }}">
+                {{ answerForm.csrf_token }}
+                {{ answerForm.answer(class="answer form-control form-control-lg",size=30,placeholder="Answer",style="margin-bottom:0px;") }}
+                <br>
+                {{ answerForm.submit(class="btn btn-lg btn-dark") }}
+            </form>
+        {% endif %}
+
+     </header>
+
+     </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>
