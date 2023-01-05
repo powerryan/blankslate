@@ -83,10 +83,16 @@
                             <span aria-hidden="true">+</span>
                         </a>
                     </div>
-
+                    {% if player.name in answered %}
+                    <div class="row playerRows playerName" style="color:#65db86">
+                        {{player.name}}
+                    </div>
+                    {% endif %}
+                    {% if player.name not in answered %}
                     <div class="row playerRows playerName">
                         {{player.name}}
                     </div>
+                    {% endif %}
                     {% if player.name==winner or player.name in winners %}
                     <div class="row playerRows">
                         <h1>WINNER!</h1>

@@ -20,9 +20,10 @@ codeCharacters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P
 usedWordsDict = {}
 playersSubmittedDict = {}
 cardNumber = 0
-
+prompts = cards.prompts
 login_manager = LoginManager()
 login_manager.init_app(app)
+prompt = ""
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -32,14 +33,17 @@ def load_user(user_id):
 def newCard(code):
     all = Player.query.all()
     players = Player.query.filter_by(roomCode=code.upper()).all()
+    for player in players:
+        player.answer=""
+    db.session.commit()
     global cardNumber
-    prompt = cards.prompts[cardNumber]
-    print(prompt)
-    print(cardNumber)
-
+    global prompts
+    global prompt
+    if cardNumber == 0:
+        random.shuffle(prompts)
+    prompt = prompts[cardNumber]
     cardNumber = (cardNumber + 1) % 500
-    print(cardNumber)
-    return render_template("index.html", logged_in=current_user.is_authenticated, user=None, players=players, roomCode=code, room=True, users=None, flip=False, prompt=prompt)
+    return render_template("index.html", logged_in=current_user.is_authenticated, user=None, players=players, roomCode=code, room=True, users=None, flip=False, prompt=prompt, answered=[])
 
 ## user enters name/code to play game
 @app.route('/play', methods=['POST'])
@@ -104,6 +108,7 @@ def landing():
 @login_required
 def submitAnswer():
     form = AnswerForm()
+    answered = []
     if form.validate_on_submit():
         answer = form.answer.data
         user = current_user
@@ -162,13 +167,18 @@ def deleteAll():
 @app.route('/flip/<code>', methods=['GET'])
 def flipAnswers(code):
     playerDict = {}
+    answered = []
     players = Player.query.filter_by(roomCode=code).order_by(Player.id).all()
     for player in players:
-        if player.answer.upper() in playerDict:
-            playerDict[player.answer.upper()].append(player)
+        if len(player.answer) > 0:
+            answered.append(player.name)
+        if player.answer.strip().upper() in playerDict:
+            playerDict[player.answer.strip().upper()].append(player)
         else:
-            playerDict[player.answer.upper()] = [player]
-        
+            playerDict[player.answer.strip().upper()] = [player]
+    if len(answered) < len(players):
+        global prompt
+        return render_template("index.html", logged_in=current_user.is_authenticated, user=None, room=True, prompt=prompt, roomCode=code, users=None, players=players, flip = False, answered=answered)
     print(playerDict)
     for k in playerDict:
         print(playerDict)
@@ -179,17 +189,17 @@ def flipAnswers(code):
             for player in playerDict[k]:
                 player.points += 1
     db.session.commit()
-    maxPoints = 19
+    maxPoints = 29
     winner = []
     for player in players:
         if player.points > maxPoints:
             maxPoints = player.points
-    if maxPoints > 19:
+    if maxPoints > 29:
         for player in players:
             if player.points == maxPoints:
                 winner.append(player.name)
         if len(winner) > 1:
-            return render_template("index.html", logged_in=current_user.is_authenticated, user=None, room=True, roomCode=code, users=None, players=players, flip = True, winners=winner)
+            return render_template("index.html", logged_in=current_user.is_authenticated, user=None, room=True, roomCode=code, users=None, players=players, flip = True, winners=winner,answered=answered)
         elif len(winner) > 0:
-            return render_template("index.html", logged_in=current_user.is_authenticated, user=None, room=True, roomCode=code, users=None, players=players, flip = True, winner=winner[0])
-    return render_template("index.html", logged_in=current_user.is_authenticated, user=None, room=True, roomCode=code, users=None, players=players, flip = True)
+            return render_template("index.html", logged_in=current_user.is_authenticated, user=None, room=True, roomCode=code, users=None, players=players, flip = True, winner=winner[0],answered=answered)
+    return render_template("index.html", logged_in=current_user.is_authenticated, user=None, room=True, roomCode=code, users=None, players=players, prompt=prompt,flip = True,answered=answered)
